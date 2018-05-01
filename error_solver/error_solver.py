@@ -233,7 +233,7 @@ class ErrorSolver():
 
         summary.extend(['{:<10} {:<25} {:<25} {:<25}'.format(k, ns.values[k],
                         ns.errors[k], ns.percent_errors[k])
-                        for k in ns.values.keys()])
+                        for k in ns.errors.keys()])
 
         ns.summary = '\n'.join(summary)
 
