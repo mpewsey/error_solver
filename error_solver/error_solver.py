@@ -3,7 +3,8 @@
 Error Solver (:mod:`error_solver.error_solver`)
 ===============================================
 
-This module contains a class for calculating and solving error matrices.
+This module contains a class for calculating and solving error matrices
+based on the total derivative.
 """
 
 import sys
@@ -15,7 +16,31 @@ from types import SimpleNamespace
 
 class ErrorSolver():
     """
-    Error solver class.
+    Class for creating and solving error matrices for systems of equations.
+
+    Parameters:
+        * equations : list
+            A list of equation strings. For example,
+
+            .. code-block:: python
+
+               ['A = pi * r**2',
+                'V = A * h']
+
+        * variables : dict
+            A dictionary of variable keys with a list or tuple of
+            (values, error_values). The variable keys must be identical to
+            those used in the equations list. If the error value is an
+            unknown value to be solved for, input None for the error.
+            For example,
+
+            .. code-block:: python
+
+               {'A' : (3.14, None),
+                'V' : (3.14, None),
+                'r' : (1, 0.05),
+                'h' : (1, 0.05)}
+
     """
     def __init__(self, equations, variables):
         self.variables = variables
@@ -27,7 +52,15 @@ class ErrorSolver():
 
     @equations.setter
     def equations(self, x):
-        self._equations = [self._parse_expr(y) for y in x]
+        self._equations = []
+
+        for y in x:
+            try:
+                eq = self._parse_expr(y)
+            except:
+                raise Exception('Failed parse_expr for {}'.format(y))
+
+            self._equations.append(eq)
 
     def append(self, equation):
         """
@@ -37,7 +70,11 @@ class ErrorSolver():
             * equation : str
                 The equation string.
         """
-        eq = self._parse_expr(equation)
+        try:
+            eq = self._parse_expr(equation)
+        except:
+            raise Exception('Failed parse_expr for {}'.format(equation))
+
         self.equations.append(eq)
 
     def _parse_expr(self, equation):
@@ -70,7 +107,7 @@ class ErrorSolver():
         if len(s)==2:
             return '({})-({})'.format(*s)
         else:
-            raise Exception('Error:: {} contains multiple equal signs.'.format(equation))
+            raise Exception('{} contains multiple equal signs.'.format(equation))
 
     def variable_summary(self):
         """
@@ -93,7 +130,7 @@ class ErrorSolver():
                 A list of dictionaries with the variable names and partial
                 derivatives.
         """
-        var = SimpleNamespace()
+        ns = SimpleNamespace()
         eq_vars = []
 
         for x in self.equations:
@@ -101,30 +138,31 @@ class ErrorSolver():
 
         eq_vars = set(eq_vars)
 
-        var.values = {k: self.variables[k][0] for k in self.variables.keys()}
-        var.errors = {k: self.variables[k][1] for k in self.variables.keys()}
+        ns.values = {k: self.variables[k][0] for k in self.variables.keys()}
+        ns.errors = {k: self.variables[k][1] for k in self.variables.keys()}
 
-        variables = sorted(var.errors)
-        var.known = [k for k in variables if var.errors[k]!=None and k in eq_vars]
-        var.unknown = [k for k in variables if var.errors[k]==None and k in eq_vars]
-        var.variables = var.unknown + var.known
+        variables = sorted(ns.errors)
+        ns.known = [k for k in variables if ns.errors[k]!=None and k in eq_vars]
+        ns.unknown = [k for k in variables if ns.errors[k]==None and k in eq_vars]
+        ns.variables = ns.unknown + ns.known
 
-        var.equations = self.equations
-        var.partials = [{v: sp.diff(x, v) for v in map(str, x.free_symbols)}
+        ns.equations = self.equations
+        ns.partials = [{v: sp.diff(x, v) for v in map(str, x.free_symbols)}
                         for x in self.equations]
 
+        # Check that there are no missing variables
+        s = eq_vars.difference(ns.variables)
+        if len(s)!=0:
+            raise Exception('Equation variables {} are missing from ' \
+                            'input variable dictionary.'.format(s))
+
         # Check that number of equations equals number of unknowns
-        n, m = len(var.unknown), len(var.equations)
+        n, m = len(ns.unknown), len(ns.equations)
         if n!=m:
-            raise Exception('Error:: {} Equations != {} Unknowns. Number of ' \
+            raise Exception('{} Equations != {} Unknowns. Number of ' \
                             'equations must match number of unknowns.'.format(m, n))
 
-        # Check that there are no missing variables
-        s = eq_vars.difference(var.variables)
-        if len(s)!=0:
-            raise Exception('Error:: Equation variables {} are missing from ' \
-                            'input variable dictionary.'.format(s))
-        return var
+        return ns
 
     def error_matrix(self):
         """
@@ -133,64 +171,70 @@ class ErrorSolver():
         Namespace Properties:
             * matrix : np.array
                 The calculated error matrix
+            * known_matrix : np.array
+                The error weight matrix for the known variables.
+            * unknown_matrix : np.array
+                The error weight matrix for the unknown variables.
             * All properties included with variable_summary method.
         """
-        var = self.variable_summary()
+        ns = self.variable_summary()
 
-        matrix = [[float(p[v].subs(var.values).evalf()) if v in p.keys() else 0
-                   for v in var.variables] for p in var.partials]
+        matrix = [[float(p[v].subs(ns.values).evalf()) if v in p.keys() else 0
+                   for v in ns.variables] for p in ns.partials]
 
-        var.matrix = np.asmatrix(matrix)
-        return var
+        ns.matrix = np.asmatrix(matrix)
+
+        n, m = len(ns.unknown), len(ns.known)
+        ns.unknown_matrix = ns.matrix[:n, :n]
+        ns.known_matrix = ns.matrix[:n:, -m:]
+
+        return ns
 
     def solve(self):
         """
         Solves the error matrix and returns a namespace with the result.
 
         Namespace Properties:
-            * known_errors : dictionary
-                A dictionary of the known input error values.
-            * unknown_errors : dictionary
-                A dictionary of the solved unknown error values.
-            * known_matrix : np.array
-                The error weight matrix for the known variables.
-            * unknown_matrix : np.array
-                The error weight matrix for the unknown variables.
             * errors : dictionary
                 A dictionary of all variable names with error values.
             * percent_errors : dictionary
                 A dictionary of all variable names with percent errors.
-            * All properties included with variable_summary method.
+            * values : dictionary
+                A dictionary of all variable names with values.
+            * summary : str
+                A string summarizing the results.
+            * All properties included with error_matrix method.
         """
-        var = self.error_matrix()
-        n, m = len(var.unknown), len(var.known)
+        ns = self.error_matrix()
 
-        k1 = var.matrix[:n, :n] # Unknown error matrix
-        k2 = var.matrix[:n:, -m:] # Known error matrix
-
-        known_errors = [var.errors[k] for k in var.known]
-
-        c = -np.matmul(k2, known_errors) # Augmented matrix
-        i = np.linalg.inv(k1) # Inverse unknown error matrix
+        known_errors = [ns.errors[k] for k in ns.known]
+        c = -np.matmul(ns.known_matrix, known_errors) # Augmented matrix
+        i = np.linalg.inv(ns.unknown_matrix) # Inverse unknown error matrix
         unknown_errors = np.matmul(i, c.T)
 
         # Summarize results
-        var.unknown_matrix = k1
-        var.known_matrix = k2
-
-        var.known_errors = {x: float(y) for x, y in zip(var.known, known_errors)}
-        var.unknown_errors = {x: float(y) for x, y in zip(var.unknown, unknown_errors)}
-        var.errors = {**var.unknown_errors, **var.known_errors}
+        ns.known_errors = {x: float(y) for x, y in zip(ns.known, known_errors)}
+        ns.unknown_errors = {x: float(y) for x, y in zip(ns.unknown, unknown_errors)}
+        ns.errors = {**ns.unknown_errors, **ns.known_errors}
 
         # Percent errors
-        var.percent_errors = {}
+        ns.percent_errors = {}
 
-        for k in var.errors.keys():
-            value = var.values[k]
+        for k in ns.errors.keys():
+            value = ns.values[k]
 
             if value==0:
                 value = sys.float_info.min
 
-            var.percent_errors[k] = abs(100*var.errors[k]/value)
+            ns.percent_errors[k] = abs(100*ns.errors[k]/value)
 
-        return var
+        summary = ['{:<10} {:<25} {:<25} {:<25}'.format('Variable', 'Value',
+                   'Error Tolerance', 'Percent Error')]
+
+        summary.extend(['{:<10} {:<25} {:<25} {:<25}'.format(k, ns.values[k],
+                        ns.errors[k], ns.percent_errors[k])
+                        for k in ns.values.keys()])
+
+        ns.summary = '\n'.join(summary)
+
+        return ns
