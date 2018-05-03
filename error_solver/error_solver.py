@@ -131,19 +131,19 @@ class ErrorSolver():
                 derivatives.
         """
         ns = SimpleNamespace()
-        eq_vars = []
+        equation_vars = []
 
         for x in self.equations:
-            eq_vars.extend([str(y) for y in x.free_symbols])
+            equation_vars.extend([str(y) for y in x.free_symbols])
 
-        eq_vars = set(eq_vars)
+        equation_vars = set(equation_vars)
 
         ns.values = {k: self.variables[k][0] for k in self.variables.keys()}
         ns.errors = {k: self.variables[k][1] for k in self.variables.keys()}
 
         variables = sorted(ns.errors)
-        ns.known = [k for k in variables if ns.errors[k]!=None and k in eq_vars]
-        ns.unknown = [k for k in variables if ns.errors[k]==None and k in eq_vars]
+        ns.known = [k for k in variables if ns.errors[k]!=None and k in equation_vars]
+        ns.unknown = [k for k in variables if ns.errors[k]==None and k in equation_vars]
         ns.variables = ns.unknown + ns.known
 
         ns.equations = self.equations
@@ -151,7 +151,7 @@ class ErrorSolver():
                         for x in self.equations]
 
         # Check that there are no missing variables
-        s = eq_vars.difference(ns.variables)
+        s = equation_vars.difference(ns.variables)
         if len(s)!=0:
             raise Exception('Equation variables {} are missing from ' \
                             'input variable dictionary.'.format(s))
@@ -179,14 +179,14 @@ class ErrorSolver():
         """
         ns = self.variable_summary()
 
-        matrix = [[float(p[v].subs(ns.values).evalf()) if v in p.keys() else 0
+        matrix = [[abs(float(p[v].subs(ns.values).evalf())) if v in p.keys() else 0
                    for v in ns.variables] for p in ns.partials]
 
         ns.matrix = np.asmatrix(matrix)
 
         n, m = len(ns.unknown), len(ns.known)
-        ns.unknown_matrix = ns.matrix[:n, :n]
-        ns.known_matrix = ns.matrix[:n:, -m:]
+        ns.unknown_matrix = ns.matrix[:, :n]
+        ns.known_matrix = ns.matrix[:, -m:]
 
         return ns
 
@@ -208,9 +208,13 @@ class ErrorSolver():
         ns = self.error_matrix()
 
         known_errors = [ns.errors[k] for k in ns.known]
-        c = -np.matmul(ns.known_matrix, known_errors) # Augmented matrix
+        c = np.matmul(ns.known_matrix, known_errors) # Augmented matrix
         i = np.linalg.inv(ns.unknown_matrix) # Inverse unknown error matrix
-        unknown_errors = np.matmul(i, c.T)
+
+        c = c.tolist()[0]
+        i = i.tolist()
+
+        unknown_errors = [sum(abs(y*z) for y, z in zip(x, c)) for x in i]
 
         # Summarize results
         ns.known_errors = {x: float(y) for x, y in zip(ns.known, known_errors)}
