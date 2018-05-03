@@ -150,6 +150,20 @@ class ErrorSolver():
         ns.partials = [{v: sp.diff(x, v) for v in map(str, x.free_symbols)}
                         for x in self.equations]
 
+        # Check for use of restricted symbols
+        restricted_symbols = set()
+
+        for x in variables:
+            expr = parse_expr(x)
+            expr = expr.atoms(sp.NumberSymbol, sp.I, sp.zoo)
+
+            if expr:
+                restricted_symbols = restricted_symbols.union(expr)
+
+        if restricted_symbols:
+            raise Exception('Symbols {} in input variable dictionary are ' \
+                            'restricted.'.format(restricted_symbols))
+
         # Check that there are no missing variables
         s = equation_vars.difference(ns.variables)
         if len(s)!=0:
