@@ -57,7 +57,7 @@ class ErrorSolver():
             try:
                 eq = self._parse_expr(y)
             except:
-                raise Exception('Failed parse_expr for {}'.format(y))
+                raise Exception('Failed to parse expression for {}'.format(y))
 
             self._equations.append(eq)
 
