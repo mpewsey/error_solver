@@ -7,7 +7,6 @@ This module contains a class for calculating and solving error matrices
 based on the total derivative.
 """
 
-import sys
 import numpy as np
 import sympy as sp
 from sympy.parsing.sympy_parser import parse_expr
@@ -62,7 +61,7 @@ class ErrorSolver():
 
             self._equations.append(eq)
 
-    def append(self, equation):
+    def append_equation(self, equation):
         """
         Appends a new equation to the equation list.
 
@@ -73,7 +72,7 @@ class ErrorSolver():
         try:
             eq = self._parse_expr(equation)
         except:
-            raise Exception('Failed parse_expr for {}'.format(equation))
+            raise Exception('Failed to parse expression for {}'.format(equation))
 
         self.equations.append(eq)
 
@@ -109,100 +108,171 @@ class ErrorSolver():
         else:
             raise Exception('{} contains multiple equal signs.'.format(equation))
 
-    def variable_summary(self):
-        """
-        Returns a namespace with various variable properties.
-
-        Namespace Properties:
-            * values : dictionary
-                A dictionary of variable names and input values.
-            * errors : dictionary
-                A dictionary of variable names and input error values.
-            * known : list
-                A list of variable names that have known input error values.
-            * unknown : list
-                A list of variable names for which error values are unknown.
-            * variables : list
-                A list of all input variable names.
-            * equations : list
-                A list of all parsed input equations.
-            * partials : list of dictionaries
-                A list of dictionaries with the variable names and partial
-                derivatives.
-        """
-        ns = SimpleNamespace()
-        equation_vars = []
+    def equation_variables(self):
+        """Returns a set of the variables in the equation list."""
+        equation_variables = set()
 
         for x in self.equations:
-            equation_vars.extend([str(y) for y in x.free_symbols])
+            var = [str(y) for y in x.free_symbols]
+            equation_variables = equation_variables.union(var)
 
-        equation_vars = set(equation_vars)
+        return equation_variables
 
-        ns.values = {k: self.variables[k][0] for k in self.variables.keys()}
-        ns.errors = {k: self.variables[k][1] for k in self.variables.keys()}
-
-        variables = sorted(ns.errors)
-        ns.known = [k for k in variables if ns.errors[k]!=None and k in equation_vars]
-        ns.unknown = [k for k in variables if ns.errors[k]==None and k in equation_vars]
-        ns.variables = ns.unknown + ns.known
-
-        ns.equations = self.equations
-        ns.partials = [{v: sp.diff(x, v) for v in map(str, x.free_symbols)}
-                        for x in self.equations]
-
-        # Check for use of restricted symbols
+    def restricted_symbols(self):
+        """Returns a set of the restricted symbols in the input variable list."""
         restricted_symbols = set()
+        variables = self.used_variables().all
 
         for x in variables:
             expr = parse_expr(x)
-            expr = expr.atoms(sp.NumberSymbol, sp.I, sp.zoo)
+            atoms = expr.atoms(sp.NumberSymbol, sp.I, sp.zoo)
 
-            if expr:
-                restricted_symbols = restricted_symbols.union(expr)
+            if atoms:
+                restricted_symbols = restricted_symbols.union(atoms)
 
-        if restricted_symbols:
-            raise Exception('Symbols {} in input variable dictionary are ' \
-                            'restricted.'.format(restricted_symbols))
+        return restricted_symbols
 
-        # Check that there are no missing variables
-        s = equation_vars.difference(ns.variables)
-        if len(s)!=0:
-            raise Exception('Equation variables {} are missing from ' \
-                            'input variable dictionary.'.format(s))
+    def values(self):
+        """Returns a dictionary of the input values."""
+        return {k: self.variables[k][0] for k in self.variables.keys()}
 
-        # Check that number of equations equals number of unknowns
-        n, m = len(ns.unknown), len(ns.equations)
-        if n!=m:
-            raise Exception('{} Equations != {} Unknowns. Number of ' \
-                            'equations must match number of unknowns.'.format(m, n))
+    def errors(self):
+        """Returns a dictionary of the input errors."""
+        return {k: self.variables[k][1] for k in self.variables.keys()}
 
-        return ns
+    def used_variables(self):
+        """
+        Returns a namespace with lists of variables used in the equations and
+        provided in the input variable dictionary.
 
-    def error_matrix(self):
+        Returned Namespace Properties:
+            * known : list
+                A list of variables with known errors.
+            * unknown : list
+                A list of variables with unknown errors.
+            * variables : list
+                A list of all variables.
+        """
+        equation_variables = self.equation_variables()
+        errors = self.errors()
+        variables = sorted(errors)
+
+        known = [k for k in variables if errors[k]!=None and k in equation_variables]
+        unknown = [k for k in variables if errors[k]==None and k in equation_variables]
+
+        return SimpleNamespace(known = known,
+                               unknown = unknown,
+                               all = unknown + known)
+
+    def unused_variables(self):
+        """
+        Returns a set of variables present in the input list but not present
+        within any equations.
+        """
+        equation_variables = self.equation_variables()
+        errors = self.errors()
+        variables = set(errors)
+
+        return variables.difference(equation_variables)
+
+    def missing_variables(self):
+        """
+        Returns a set of variables present in the equations list but not
+        include in the input variable dictionary.
+        """
+        variables = self.used_variables().all
+        equation_variables = self.equation_variables()
+        return equation_variables.difference(variables)
+
+    def partials(self):
+        """Returns a list of the partial derivatives for all equations."""
+        return [{v: sp.diff(x, v) for v in map(str, x.free_symbols)}
+                for x in self.equations]
+
+    def _check_restricted_symbols(self):
+        """
+        Returns a namespace with the status and message for the restricted
+        symbol check.
+        """
+        restricted_symbols = self.restricted_symbols()
+        status = False if restricted_symbols else True
+        s = 'Symbols {} in input variable dictionary are restricted.'
+        message = s.format(restricted_symbols) if not status else ''
+        return SimpleNamespace(status = status, message = message)
+
+    def _check_missing_variables(self):
+        """
+        Returns a namespace with the status and message for the missing
+        variable check.
+        """
+        missing = self.missing_variables()
+        status = False if missing else True
+        s = 'Equation variables {} are missing from input variable dictionary.'
+        message = s.format(missing) if not status else ''
+        return SimpleNamespace(status = status, message = message)
+
+    def _check_determinant_system(self):
+        """
+        Returns a namespace with the status and message for the determinant
+        system check.
+        """
+        unknown = self.used_variables().unknown
+        u, e = len(unknown), len(self.equations)
+
+        status = False if u!=e else True
+        s = '{} Equations != {} Unknowns. System is indeterminant.'
+        message = s.format(e, u) if not status else ''
+
+        return SimpleNamespace(status = status, message = message)
+
+    def check(self):
+        """
+        Returns a namespace with the status and messsage for all input error
+        checks.
+        """
+        check_methods = ('_check_restricted_symbols',
+                         '_check_missing_variables',
+                         '_check_determinant_system')
+
+        checks = [getattr(self, x)() for x in check_methods]
+        statuses = [x.status for x in checks]
+        messages = [x.message for x in checks if x.message!='']
+
+        status = False if False in statuses else True
+        message = '\n'.join(messages) if not status else ''
+
+        return SimpleNamespace(status = status, message = message)
+
+    def error_matrices(self):
         """
         Returns a namespace that includes a matrix of calculated error weights.
 
-        Namespace Properties:
-            * matrix : np.array
-                The calculated error matrix
-            * known_matrix : np.array
+        Returned Namespace Properties:
+            * known : np.array
                 The error weight matrix for the known variables.
-            * unknown_matrix : np.array
+            * unknown : np.array
                 The error weight matrix for the unknown variables.
-            * All properties included with variable_summary method.
         """
-        ns = self.variable_summary()
+        check = self.check()
 
-        matrix = [[abs(float(p[v].subs(ns.values).evalf())) if v in p.keys() else 0
-                   for v in ns.variables] for p in ns.partials]
+        if not check.status:
+            raise Exception('{}'.format(check.message))
 
-        ns.matrix = np.asmatrix(matrix)
+        partials = self.partials()
+        variables = self.used_variables()
+        values = self.values()
 
-        n, m = len(ns.unknown), len(ns.known)
-        ns.unknown_matrix = ns.matrix[:, :n]
-        ns.known_matrix = ns.matrix[:, -m:]
+        matrix = [[float(p[v].subs(values).evalf()) if v in p.keys() else 0
+                   for v in variables.all] for p in partials]
 
-        return ns
+        u, k = len(variables.unknown), len(variables.known)
+        matrix = np.asmatrix(matrix)
+        unknown = matrix[:, :u]
+        known = matrix[:, -k:]
+
+        return SimpleNamespace(unknown = unknown,
+                               known = known,
+                               variables = variables)
 
     def solve(self):
         """
@@ -217,42 +287,33 @@ class ErrorSolver():
                 A dictionary of all variable names with values.
             * summary : str
                 A string summarizing the results.
-            * All properties included with error_matrix method.
         """
-        ns = self.error_matrix()
+        d = self.error_matrices()
+        errors = self.errors()
+        values = self.values()
 
-        known_errors = [ns.errors[k] for k in ns.known]
-        c = np.matmul(ns.known_matrix, known_errors) # Augmented matrix
-        i = np.linalg.inv(ns.unknown_matrix) # Inverse unknown error matrix
+        ui = np.linalg.inv(d.unknown)
+        xk = np.matrix([[errors[k]] for k in d.variables.known])
 
-        c = c.tolist()[0]
-        i = i.tolist()
+        xu = np.matmul(abs(d.known), abs(xk))
+        xu = np.matmul(abs(ui), xu)
 
-        unknown_errors = [sum(abs(y*z) for y, z in zip(x, c)) for x in i]
-
-        # Summarize results
-        ns.known_errors = {x: float(y) for x, y in zip(ns.known, known_errors)}
-        ns.unknown_errors = {x: float(y) for x, y in zip(ns.unknown, unknown_errors)}
-        ns.errors = {**ns.unknown_errors, **ns.known_errors}
+        errors = {x: float(y) for x, y in zip(d.variables.known, xk)}
+        unknown = {x: float(y) for x, y in zip(d.variables.unknown, xu)}
+        errors.update(unknown)
 
         # Percent errors
-        ns.percent_errors = {}
+        percent_errors = {k: abs(100*errors[k]/values[k]) if values[k]!=0 else float('inf')
+                          for k in errors.keys()}
 
-        for k in ns.errors.keys():
-            value = ns.values[k]
+        # Summary
+        s = '{:<10} {:<25} {:<25} {:<25} {:^7}'
+        summary = [s.format('Variable', 'Value', 'Error Tolerance', 'Percent Error', 'Unknown')]
+        summary.extend([s.format(k, values[k], errors[k], percent_errors[k], '*' if k in unknown.keys() else '')
+                        for k in errors.keys()])
+        summary = '\n'.join(summary)
 
-            if value==0:
-                value = sys.float_info.min
-
-            ns.percent_errors[k] = abs(100*ns.errors[k]/value)
-
-        summary = ['{:<10} {:<25} {:<25} {:<25}'.format('Variable', 'Value',
-                   'Error Tolerance', 'Percent Error')]
-
-        summary.extend(['{:<10} {:<25} {:<25} {:<25}'.format(k, ns.values[k],
-                        ns.errors[k], ns.percent_errors[k])
-                        for k in ns.errors.keys()])
-
-        ns.summary = '\n'.join(summary)
-
-        return ns
+        return SimpleNamespace(values = values,
+                               errors = errors,
+                               percent_errors = percent_errors,
+                               summary = summary)
