@@ -303,7 +303,7 @@ class ErrorSolver():
         errors.update(unknown)
 
         # Percent errors
-        percent_errors = {k: abs(100*errors[k]/values[k]) if values[k]!=0 else float('inf')
+        percent_errors = {k: abs(100*errors[k]/values[k]) if values[k]!=0 else 0
                           for k in errors.keys()}
 
         # Summary
