@@ -16,4 +16,4 @@ def percent_change(x, y):
         * y : float
             Second value.
     """
-    return abs(1-y/x)*100 if x!=0 else float('inf')
+    return abs(1-y/x)*100 if x!=0 else 0

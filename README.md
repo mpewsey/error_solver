@@ -27,6 +27,7 @@ This package has the following dependencies:
 
 
 ```python
+import pandas as pd
 from error_solver import ErrorSolver
 ```
 
@@ -57,15 +58,75 @@ variables = {'h': (h, rtol),
 solver = ErrorSolver(equations, variables)
 solution = solver.solve()
 
-print(solution.summary)
+pd.read_csv(pd.compat.StringIO(solution.summary))
 ```
 
-    Variable   Value                     Error Tolerance           Percent Error             Unknown
-    h          12                        0.05                      0.4166666666666667               
-    r          5                         0.05                      1.0                              
-    A          78.53981633974483         1.5707963267948966        2.0                          *   
-    V          942.4777960769379         22.776546738526           2.4166666666666665           *   
-    
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Variable</th>
+      <th>Value</th>
+      <th>Error Tolerance</th>
+      <th>Percent Error</th>
+      <th>Unknown</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>h</td>
+      <td>12.000000</td>
+      <td>0.050000</td>
+      <td>0.416667</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>r</td>
+      <td>5.000000</td>
+      <td>0.050000</td>
+      <td>1.000000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>A</td>
+      <td>78.539816</td>
+      <td>1.570796</td>
+      <td>2.000000</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V</td>
+      <td>942.477796</td>
+      <td>22.776547</td>
+      <td>2.416667</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
 
 ### Error in Tapered Cylinder
 
@@ -99,14 +160,88 @@ variables = {'h' : (h,  htol),
 solver = ErrorSolver(equations, variables)
 solution = solver.solve()
 
-print(solution.summary)
+pd.read_csv(pd.compat.StringIO(solution.summary))
 ```
 
-    Variable   Value                     Error Tolerance           Percent Error             Unknown
-    h          12                        0.05                      0.4166666666666667               
-    r1         2                         0.05                      2.5                              
-    r2         5                         0.05                      1.0                              
-    A1         12.566370614359172        0.6283185307179586        5.0                          *   
-    A2         78.53981633974483         1.5707963267948966        2.0                          *   
-    V          546.637121724624          15.472343818929732        2.830459770114943            *   
-    
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Variable</th>
+      <th>Value</th>
+      <th>Error Tolerance</th>
+      <th>Percent Error</th>
+      <th>Unknown</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>h</td>
+      <td>12.000000</td>
+      <td>0.050000</td>
+      <td>0.416667</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>r1</td>
+      <td>2.000000</td>
+      <td>0.050000</td>
+      <td>2.500000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>r2</td>
+      <td>5.000000</td>
+      <td>0.050000</td>
+      <td>1.000000</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>A1</td>
+      <td>12.566371</td>
+      <td>0.628319</td>
+      <td>5.000000</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>A2</td>
+      <td>78.539816</td>
+      <td>1.570796</td>
+      <td>2.000000</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>V</td>
+      <td>546.637122</td>
+      <td>15.472344</td>
+      <td>2.830460</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+

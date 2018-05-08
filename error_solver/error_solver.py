@@ -307,9 +307,11 @@ class ErrorSolver():
                           for k in errors.keys()}
 
         # Summary
-        s = '{:<10} {:<25} {:<25} {:<25} {:^7}'
-        summary = [s.format('Variable', 'Value', 'Error Tolerance', 'Percent Error', 'Unknown')]
-        summary.extend([s.format(k, values[k], errors[k], percent_errors[k], '*' if k in unknown.keys() else '')
+        s = '{},{},{},{},{}'
+        summary = [s.format('Variable', 'Value', 'Error Tolerance',
+                   'Percent Error', 'Unknown')]
+        summary.extend([s.format(k, values[k], errors[k], percent_errors[k],
+                        True if k in unknown.keys() else False)
                         for k in errors.keys()])
         summary = '\n'.join(summary)
 

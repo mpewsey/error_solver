@@ -12,6 +12,7 @@ jupyter = "*"
 pytest = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.6"
