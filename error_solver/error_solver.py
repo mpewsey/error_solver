@@ -225,6 +225,22 @@ class ErrorSolver():
 
         return SimpleNamespace(status = status, message = message)
 
+    def _check_equation_values(self):
+        """
+        Returns a namespace with the status and message for the equation
+        value check.
+        """
+        tol = 1e-2
+        values = self.values()
+        equation_values = [abs(float(x.subs(values).evalf())) for x in self.equations]
+        status = False if max(equation_values)>tol else True
+
+        message = ['Value for {} = {} > {}.'.format(e, v, tol)
+                   for v, e in zip(equation_values, self.equations) if v>tol]
+        message = '\n'.join(message) if not status else ''
+
+        return SimpleNamespace(status = status, message = message)
+
     def check(self):
         """
         Returns a namespace with the status and messsage for all input error
@@ -232,7 +248,8 @@ class ErrorSolver():
         """
         check_methods = ('_check_restricted_symbols',
                          '_check_missing_variables',
-                         '_check_determinant_system')
+                         '_check_determinant_system',
+                         '_check_equation_values')
 
         checks = [getattr(self, x)() for x in check_methods]
         statuses = [x.status for x in checks]
