@@ -326,7 +326,7 @@ class ErrorSolver():
                           for k in errors.keys()}
 
         # Summary
-        s = '{:^15}|{:^20}|{:^20}|{:^20}|{}'
+        s = '{:^15}|{:^25}|{:^25}|{:^25}|{}'
         summary = [s.format('Variable', 'Value', 'Error Tolerance',
                    'Percent Error', 'Unknown')]
         summary.extend([s.format(k, values[k], errors[k], percent_errors[k], k in unknown.keys())
