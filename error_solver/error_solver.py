@@ -319,16 +319,17 @@ class ErrorSolver():
         unknown = {x: float(y) for x, y in zip(d.variables.unknown, xu)}
         errors.update(unknown)
 
+        values = {k: values[k] for k in errors.keys()}
+
         # Percent errors
         percent_errors = {k: abs(100*errors[k]/values[k]) if values[k]!=0 else 0
                           for k in errors.keys()}
 
         # Summary
-        s = '{},{},{},{},{}'
+        s = '{:^15}|{:^20}|{:^20}|{:^20}|{}'
         summary = [s.format('Variable', 'Value', 'Error Tolerance',
                    'Percent Error', 'Unknown')]
-        summary.extend([s.format(k, values[k], errors[k], percent_errors[k],
-                        True if k in unknown.keys() else False)
+        summary.extend([s.format(k, values[k], errors[k], percent_errors[k], k in unknown.keys())
                         for k in errors.keys()])
         summary = '\n'.join(summary)
 
