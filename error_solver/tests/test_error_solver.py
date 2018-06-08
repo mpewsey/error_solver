@@ -1,5 +1,5 @@
-from error_solver.funcs import percent_change
-from error_solver.error_solver import ErrorSolver
+from ..funcs import percent_change
+from ..error_solver import ErrorSolver
 
 
 def test_solver():

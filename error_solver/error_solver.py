@@ -312,8 +312,7 @@ class ErrorSolver():
         ui = np.linalg.inv(d.unknown)
         xk = np.matrix([[errors[k]] for k in d.variables.known])
 
-        xu = np.matmul(abs(d.known), abs(xk))
-        xu = np.matmul(abs(ui), xu)
+        xu = np.abs(ui) @ np.abs(d.known) @ np.abs(xk)
 
         errors = {x: float(y) for x, y in zip(d.variables.known, xk)}
         unknown = {x: float(y) for x, y in zip(d.variables.unknown, xu)}
