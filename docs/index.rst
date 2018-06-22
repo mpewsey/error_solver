@@ -13,7 +13,6 @@ Reference
    :maxdepth: 1
 
    error_solver
-   funcs
 
 
 Indices and tables

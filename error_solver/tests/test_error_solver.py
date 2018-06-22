@@ -1,4 +1,4 @@
-from ..funcs import percent_change
+from pytest import approx
 from ..error_solver import ErrorSolver
 
 
@@ -14,8 +14,8 @@ def test_solver():
     solver = ErrorSolver(equations, variables)
     sol = solver.solve()
 
-    assert percent_change(sol.errors['V'], 22.78)<=1
-    assert percent_change(sol.percent_errors['V'], 2.42)<=1
+    assert approx(sol.errors['V'], 0.01) == 22.78
+    assert approx(sol.percent_errors['V'], 0.01) == 2.42
 
 def test_append_equation():
     equations = ['V = A * h']
@@ -44,7 +44,7 @@ def test_equation_variables():
     x = tuple(sorted(solver.equation_variables()))
     y = tuple(sorted(['A', 'r', 'V', 'h']))
 
-    assert x==y
+    assert x == y
 
 def test_unused_variables():
     equations = ['A = pi * r**2',
@@ -61,7 +61,7 @@ def test_unused_variables():
     x = tuple(sorted(solver.unused_variables()))
     y = tuple(sorted(['B', 'G']))
 
-    assert x==y
+    assert x == y
 
 def test_missing_variables():
     equations = ['A = pi * r**2',
@@ -74,4 +74,4 @@ def test_missing_variables():
     x = tuple(sorted(solver.missing_variables()))
     y = tuple(sorted(['V','A']))
 
-    assert x==y
+    assert x == y

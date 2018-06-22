@@ -18,7 +18,7 @@ class ErrorSolver():
     Class for creating and solving error matrices for systems of equations.
 
     Parameters:
-        * equations : list
+        equations : list
             A list of equation strings. For example,
 
             .. code-block:: python
@@ -26,7 +26,7 @@ class ErrorSolver():
                ['A = pi * r**2',
                 'V = A * h']
 
-        * variables : dict
+        variables : dict
             A dictionary of variable keys with a list or tuple of
             (values, error_values). The variable keys must be identical to
             those used in the equations list. If the error value is an
@@ -66,7 +66,7 @@ class ErrorSolver():
         Appends a new equation to the equation list.
 
         Parameters:
-            * equation : str
+            equation : str
                 The equation string.
         """
         try:
@@ -82,7 +82,7 @@ class ErrorSolver():
         the result.
 
         Parameters:
-            * equation : str
+            equation : str
                 The equation string to be parsed.
         """
         s = self._set_equal_to_zero(equation)
@@ -95,7 +95,7 @@ class ErrorSolver():
         with sympy.
 
         Parameters:
-            * equation : str
+            equation : str
                 The equation string to be rearranged.
         """
         f = str(equation)
@@ -146,11 +146,11 @@ class ErrorSolver():
         provided in the input variable dictionary.
 
         Returned Namespace Properties:
-            * known : list
+            known : list
                 A list of variables with known errors.
-            * unknown : list
+            unknown : list
                 A list of variables with unknown errors.
-            * variables : list
+            variables : list
                 A list of all variables.
         """
         equation_variables = self.equation_variables()
@@ -265,9 +265,9 @@ class ErrorSolver():
         Returns a namespace that includes a matrix of calculated error weights.
 
         Returned Namespace Properties:
-            * known : np.array
+            known : np.array
                 The error weight matrix for the known variables.
-            * unknown : np.array
+            unknown : np.array
                 The error weight matrix for the unknown variables.
         """
         check = self.check()
@@ -296,13 +296,13 @@ class ErrorSolver():
         Solves the error matrix and returns a namespace with the result.
 
         Namespace Properties:
-            * errors : dictionary
+            errors : dictionary
                 A dictionary of all variable names with error values.
-            * percent_errors : dictionary
+            percent_errors : dictionary
                 A dictionary of all variable names with percent errors.
-            * values : dictionary
+            values : dictionary
                 A dictionary of all variable names with values.
-            * summary : str
+            summary : str
                 A string summarizing the results.
         """
         d = self.error_matrices()

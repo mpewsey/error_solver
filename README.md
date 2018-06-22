@@ -27,7 +27,6 @@ This package has the following dependencies:
 
 
 ```python
-import pandas as pd
 from error_solver import ErrorSolver
 ```
 
