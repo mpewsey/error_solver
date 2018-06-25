@@ -19,7 +19,9 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath(os.path.split(os.path.abspath('.'))[0]))
+ROOT_PATH = os.path.abspath(os.path.join('..'))
+if ROOT_PATH not in sys.path:
+    sys.path.insert(0, ROOT_PATH)
 
 # -- Project information -----------------------------------------------------
 
@@ -52,6 +54,7 @@ extensions = [
     #'sphinx.ext.imgmath',
     #'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.viewcode',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

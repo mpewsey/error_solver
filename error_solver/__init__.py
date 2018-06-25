@@ -1,1 +1,1 @@
-from .error_solver import ErrorSolver
+from .solver import ErrorSolver

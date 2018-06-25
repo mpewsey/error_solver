@@ -1,18 +1,11 @@
 Error Solver
 ============
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+The Error Solver package provides class for estimating error tolerances for
+calculated values based on the total derivatives of the involved equations.
 
-
-Reference
----------
-
-.. toctree::
-   :maxdepth: 1
-
-   error_solver
+.. automodule:: error_solver.solver
+   :members:
 
 
 Indices and tables

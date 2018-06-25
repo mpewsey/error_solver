@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name = 'error_solver',
-      version = '2018.05.21',
+      version = '0.0.0',
       description = '',
       url = '',
       license = '',
