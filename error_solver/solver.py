@@ -4,6 +4,7 @@
 ===================
 """
 
+import inspect
 import numpy as np
 import sympy as sp
 from sympy.parsing.sympy_parser import parse_expr
@@ -48,7 +49,7 @@ class ErrorSolver():
         tolerance : float
             The tolerance to use for equation equality check.
     """
-    def __init__(self, equations, values, errors, tolerance = 0.01):
+    def __init__(self, equations, values = {}, errors = {}, tolerance = 0.01):
         self.equations = equations
         self.values = values
         self.errors = errors
@@ -149,12 +150,12 @@ class ErrorSolver():
             unknown : list
                 A list of variables with unknown errors.
         """
-        equation_variables = self.equation_variables()
-
-        known = [k for k in self.values if k in self.errors and k in equation_variables]
-        unknown = [k for k in self.values if k not in self.errors and k in equation_variables]
-
-        return {'known' : known, 'unknown' : unknown}
+        variables = self.equation_variables()
+        v = variables.intersection(set(self.values))
+        e = variables.intersection(set(self.errors))
+        known = sorted(e)
+        unknown = sorted(v - e)
+        return {'unknown' : unknown, 'known' : known}
 
     def unused_variables(self):
         """
@@ -162,7 +163,7 @@ class ErrorSolver():
         within any equations.
         """
         equation_variables = self.equation_variables()
-        variables = set(list(self.values) + list(self.errors))
+        variables = set(self.values).union(self.errors)
         return variables - equation_variables
 
     def missing_variables(self):
@@ -322,3 +323,199 @@ class ErrorSolver():
         summary = '\n'.join(summary)
 
         return {'values' : values, 'errors' : errors, 'percent_errors' : pct_errors, 'summary' : summary}
+
+    def module_str(self, names = {}, tab_spaces = 4):
+        """
+        Generates a Python module with the equations and partial derivatives
+        for the class and returns a string.
+
+        Parameters:
+            tab_spaces : int
+                Number of spaces to use for a tab indent.
+        """
+        if names:
+            equations = [e.subs(names) for e in self.equations]
+            partials = [{names[k] if k in names else k: p[k].subs(names) for k in p}
+                        for p in self.partials()]
+        else:
+            equations = self.equations
+            partials = self.partials()
+
+        eq, pf = [], []
+        t = ' ' * tab_spaces + 'return {}\n\n'
+
+        s = ' ' * tab_spaces + '{:>' + str(len(str(len(equations)))) + '} : {}'
+        s = [s.format(i, e) for i, e in enumerate(equations)]
+        s = '\n'.join(s)
+        s = '"""\nError Solver Function Module\n\nEquations:\n{}\n"""\n\n'.format(s)
+        s += 'from math import *\n\n'
+
+        for i, (e, p) in enumerate(zip(equations, partials)):
+            d = {}
+            eq.append('eq{}'.format(i))
+            args = set(p.keys())
+            args = ', '.join(args)
+            s += '# Equation {}\n'.format(i)
+            s += 'def eq{}({}, **kwargs):\n'.format(i, args)
+            s += t.format(e)
+
+            for k in p:
+                d[k] = 'eq{}_{}'.format(i, k)
+                s += 'def eq{}_{}({}, **kwargs):\n'.format(i, k, args)
+                s += t.format(p[k])
+
+            d = ['{!r} : {}'.format(k, d[k]) for k in d]
+            d = ', '.join(d)
+            pf.append('{' + d + '}')
+
+        s += '# Assembled Methods\n'
+
+        eq = (',\n' + ' ' * 13).join(eq)
+        s += 'EQUATIONS = [{}]\n\n'.format(eq)
+
+        pf = (',\n' + ' ' * 12).join(pf)
+        s += 'PARTIALS = [{}]'.format(pf)
+
+        return s
+
+    def write_module(self, path, names = {}, tab_spaces = 4):
+        """
+        Generates a Python module with the equations and partial derivatives
+        for the class and writes it to the designated path.
+
+        Parameters:
+            tab_spaces : int
+                Number of spaces to use for a tab indent.
+        """
+        s = self.module_str(names, tab_spaces)
+        with open(path, 'wt') as file:
+            file.truncate()
+            file.write(s)
+
+
+class ErrorSolver2():
+    """
+    Another class.
+
+    Parameters:
+        equations : list
+            A list of equation functions. Functions should return a float value.
+        partials : list
+            A list of dictionaries of partial derivative functions. Each
+            function should return a float value.
+        values : dict
+            A dictionary of values.
+        errors : dict
+            A dictionary of error tolerances.
+        tolerance : float
+            The tolerance used for verifying equation value validity.
+    """
+    def __init__(self, equations, partials, values, errors, tolerance = 0.01):
+        self.equations = equations
+        self.partials = partials
+        self.values = values
+        self.errors = errors
+        self.tolerance = tolerance
+
+    def init_from_module(module, values, errors, tolerance = 0.01):
+        """
+        Initializes the class given a generated error solver module.
+
+        Parameters:
+            module : module
+                An imported module object.
+            values : dict
+                A dictionary of values.
+            errors : dict
+                A dictionary of error tolerances.
+            tolerance : float
+                The tolerance used for verifying equation value validity.
+        """
+        equations = getattr(module, 'EQUATIONS')
+        partials = getattr(module, 'PARTIALS')
+        return ErrorSolver2(equations = equations,
+                            partials = partials,
+                            values = values,
+                            errors = errors,
+                            tolerance = tolerance)
+
+    used_variables = ErrorSolver.used_variables
+    unused_variables = ErrorSolver.unused_variables
+    missing_variables = ErrorSolver.missing_variables
+    _check_missing_variables = ErrorSolver._check_missing_variables
+    _check_determinant_system = ErrorSolver._check_determinant_system
+    solve = ErrorSolver.solve
+
+    def equation_variables(self):
+        """Returns a set of the variables in the equation list."""
+        variables = set()
+        for e in self.equations:
+            variables |= set(inspect.getargspec(e)[0])
+        return variables
+
+    def _check_equation_values(self):
+        """
+        Returns a dictionary with the status and message for the equation
+        value check.
+        """
+        tol = self.tolerance
+        equation_values = [abs(e(**self.values)) for e in self.equations]
+        ok = (max(equation_values) <= tol)
+
+        if ok:
+            message = ''
+        else:
+            message = ['Value for {} = {} > {}.'.format(e, v, tol)
+                       for v, e in zip(equation_values, self.equations) if v > tol]
+            message = '\n'.join(message)
+
+        return {'ok' : ok, 'message' : message}
+
+    def check(self):
+        """
+        Returns a dicionary with the status and message for all input error
+        checks.
+        """
+        check_methods = ('_check_missing_variables',
+                         '_check_determinant_system',
+                         '_check_equation_values')
+
+        checks = [getattr(self, x)() for x in check_methods]
+        ok = (False not in set(x['ok'] for x in checks))
+        if ok:
+            message = ''
+        else:
+            message = [x['message'] for x in checks if x['message'] != '']
+            message = '\n'.join(message)
+
+        return {'ok' : ok, 'message' : message}
+
+    def error_matrices(self):
+        """
+        Returns a dictionary that includes a matrix of calculated error weights.
+
+        Returned dictionary keys:
+            known : array
+                The error weight matrix for the known variables.
+            unknown : array
+                The error weight matrix for the unknown variables.
+            variables : list
+                A list of all variable names.
+        """
+        check = self.check()
+
+        if not check['ok']:
+            raise Exception('{}'.format(check['message']))
+
+        variables = self.used_variables()
+        all_variables = variables['unknown'] + variables['known']
+
+        matrix = [[p[v](**self.values) if v in p else 0 for v in all_variables]
+                  for p in self.partials]
+
+        u, k = len(variables['unknown']), len(variables['known'])
+        matrix = np.asmatrix(matrix)
+        unknown = matrix[:, :u]
+        known = matrix[:, -k:]
+
+        return {'unknown' : unknown, 'known' : known, 'variables' : variables}

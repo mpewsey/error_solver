@@ -1,8 +1,10 @@
+import os
 from pytest import approx
-from ..solver import ErrorSolver
+from ..solver import ErrorSolver, ErrorSolver2
+from ..data import cylinder_error
 
 
-def test_solver():
+def test_solver_1():
     equations = ['A = pi * r**2',
                  'V = A * h']
 
@@ -36,7 +38,7 @@ def test_append_equation():
 
     assert solver.check()['ok']
 
-def test_equation_variables():
+def test_equation_variables_1():
     equations = ['A = pi * r**2',
                  'V = A * h']
 
@@ -91,5 +93,43 @@ def test_missing_variables():
     solver = ErrorSolver(equations, values, errors)
     x = tuple(sorted(solver.missing_variables()))
     y = tuple(sorted(['V', 'A']))
+
+    assert x == y
+
+
+def test_solver_2():
+    values = {'h': 12,
+              'r': 5,
+              'A': 78.54,
+              'V': 942.48}
+
+    errors = {'h': 0.05,
+              'r': 0.05}
+
+    equations = cylinder_error.EQUATIONS
+    partials = cylinder_error.PARTIALS
+
+    solver = ErrorSolver2(equations, partials, values, errors)
+    sol = solver.solve()
+
+    assert approx(sol['errors']['V'], 0.01) == 22.78
+    assert approx(sol['percent_errors']['V'], 0.01) == 2.42
+
+
+def test_equation_variables_2():
+    values = {'h': 12,
+              'r': 5,
+              'A': 78.54,
+              'V': 942.48}
+
+    errors = {'h': 0.05,
+              'r': 0.05}
+
+    equations = cylinder_error.EQUATIONS
+    partials = cylinder_error.PARTIALS
+
+    solver = ErrorSolver2(equations, partials, values, errors)
+    x = tuple(sorted(solver.equation_variables()))
+    y = tuple(sorted(['A', 'r', 'V', 'h']))
 
     assert x == y
