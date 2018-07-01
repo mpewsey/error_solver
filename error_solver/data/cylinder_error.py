@@ -19,21 +19,23 @@ def eq0_r(A, r, **kwargs):
     return -2*pi*r
 
 # Equation 1
-def eq1(A, V, h, **kwargs):
+def eq1(A, h, V, **kwargs):
     return -A*h + V
 
-def eq1_h(A, V, h, **kwargs):
-    return -A
-
-def eq1_A(A, V, h, **kwargs):
+def eq1_A(A, h, V, **kwargs):
     return -h
 
-def eq1_V(A, V, h, **kwargs):
+def eq1_h(A, h, V, **kwargs):
+    return -A
+
+def eq1_V(A, h, V, **kwargs):
     return 1
 
 # Assembled Methods
-EQUATIONS = [eq0,
-             eq1]
+def equations():
+    return [eq0,
+            eq1]
 
-PARTIALS = [{'A' : eq0_A, 'r' : eq0_r},
-            {'h' : eq1_h, 'A' : eq1_A, 'V' : eq1_V}]
+def partials():
+    return [{'A' : eq0_A, 'r' : eq0_r},
+            {'A' : eq1_A, 'h' : eq1_h, 'V' : eq1_V}]

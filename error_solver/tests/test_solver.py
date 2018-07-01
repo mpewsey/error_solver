@@ -1,7 +1,7 @@
 import os
 from pytest import approx
 from ..solver import ErrorSolver, ErrorSolver2
-from ..data import cylinder_error
+from ..data import cylinder_error as ce
 
 
 def test_solver_1():
@@ -106,8 +106,8 @@ def test_solver_2():
     errors = {'h': 0.05,
               'r': 0.05}
 
-    equations = cylinder_error.EQUATIONS
-    partials = cylinder_error.PARTIALS
+    equations = ce.equations()
+    partials = ce.partials()
 
     solver = ErrorSolver2(equations, partials, values, errors)
     sol = solver.solve()
@@ -125,8 +125,8 @@ def test_equation_variables_2():
     errors = {'h': 0.05,
               'r': 0.05}
 
-    equations = cylinder_error.EQUATIONS
-    partials = cylinder_error.PARTIALS
+    equations = ce.equations()
+    partials = ce.partials()
 
     solver = ErrorSolver2(equations, partials, values, errors)
     x = tuple(sorted(solver.equation_variables()))

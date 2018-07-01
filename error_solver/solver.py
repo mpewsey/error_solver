@@ -333,6 +333,15 @@ class ErrorSolver():
             tab_spaces : int
                 Number of spaces to use for a tab indent.
         """
+        eq, pf = [], []
+        t = ' ' * tab_spaces + 'return {}\n\n'
+
+        s = ' ' * tab_spaces + '{:>' + str(len(str(len(self.equations)))) + '} : {}'
+        s = [s.format(i, e) for i, e in enumerate(self.equations)]
+        s = '\n'.join(s)
+        s = '"""\nError Solver Function Module\n\nEquations:\n{}\n"""\n\n'.format(s)
+        s += 'from math import *\n\n'
+
         if names:
             equations = [e.subs(names) for e in self.equations]
             partials = [{names[k] if k in names else k: p[k].subs(names) for k in p}
@@ -340,15 +349,6 @@ class ErrorSolver():
         else:
             equations = self.equations
             partials = self.partials()
-
-        eq, pf = [], []
-        t = ' ' * tab_spaces + 'return {}\n\n'
-
-        s = ' ' * tab_spaces + '{:>' + str(len(str(len(equations)))) + '} : {}'
-        s = [s.format(i, e) for i, e in enumerate(equations)]
-        s = '\n'.join(s)
-        s = '"""\nError Solver Function Module\n\nEquations:\n{}\n"""\n\n'.format(s)
-        s += 'from math import *\n\n'
 
         for i, (e, p) in enumerate(zip(equations, partials)):
             d = {}
@@ -370,11 +370,13 @@ class ErrorSolver():
 
         s += '# Assembled Methods\n'
 
-        eq = (',\n' + ' ' * 13).join(eq)
-        s += 'EQUATIONS = [{}]\n\n'.format(eq)
+        eq = (',\n' + ' ' * 12).join(eq)
+        s += 'def equations():\n'
+        s += '    return [{}]\n\n'.format(eq)
 
         pf = (',\n' + ' ' * 12).join(pf)
-        s += 'PARTIALS = [{}]'.format(pf)
+        s += 'def partials():\n'
+        s += '    return [{}]'.format(pf)
 
         return s
 
@@ -431,10 +433,10 @@ class ErrorSolver2():
             tolerance : float
                 The tolerance used for verifying equation value validity.
         """
-        equations = getattr(module, 'EQUATIONS')
-        partials = getattr(module, 'PARTIALS')
-        return ErrorSolver2(equations = equations,
-                            partials = partials,
+        equations = getattr(module, 'equations')
+        partials = getattr(module, 'partials')
+        return ErrorSolver2(equations = equations(),
+                            partials = partials(),
                             values = values,
                             errors = errors,
                             tolerance = tolerance)
