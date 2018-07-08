@@ -8,8 +8,8 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set SOURCEDIR=.
-set BUILDDIR=_build
-set SPHINXPROJ=tline
+set BUILDDIR=../../error_solver_docs
+set SPHINXPROJ=errorsolver
 
 if "%1" == "" goto help
 

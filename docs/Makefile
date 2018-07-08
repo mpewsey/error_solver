@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = errorsolver
 SOURCEDIR     = .
-BUILDDIR      = _build
+BUILDDIR      = ../../error_solver_docs
 
 # Put it first so that "make" without argument is like "make help".
 help:
