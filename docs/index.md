@@ -25,3 +25,11 @@ pip install git+https://github.com/line-mind/error_solver#egg=error_solver
 ## Examples
 
 For example usages, see [examples.ipynb](examples.ipynb).
+
+
+# Indices and tables
+
+```eval_rst
+* :ref:`genindex`
+* :ref:`modindex`
+```

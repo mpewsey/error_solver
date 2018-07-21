@@ -1,7 +1,11 @@
 """
-===================
-:mod:`error_solver`
-===================
+Summary
+-------
+Includes classes for estimating calculated error tolerances.
+
+Classes
+-------
+
 """
 
 import inspect
@@ -14,40 +18,41 @@ class ErrorSolver():
     """
     Class for creating and solving error matrices for systems of equations.
 
-    Parameters:
-        equations : list
-            A list of equation strings. Example:
+    Parameters
+    ----------
+    equations : list
+        A list of equation strings. Example:
 
-            .. code::
+        .. code::
 
-               ['A = pi * r**2',
-                'V = A * h']
-
-
-        values : dict
-            A dictionary of variable keys with values. The keys must be
-            identical to those used in the equations list.
-
-            .. code::
-
-               {'A' : 3.14,
-                'V' : 3.14,
-                'r' : 1,
-                'h' : 1}
+           ['A = pi * r**2',
+            'V = A * h']
 
 
-        errors : dict
-            A dictionary of variable keys with error tolerance values.
-            The keys must be identical to those used in the equations list.
-            Example:
+    values : dict
+        A dictionary of variable keys with values. The keys must be
+        identical to those used in the equations list.
 
-            .. code::
+        .. code::
 
-               {'r' : 0.05,
-                'h' : 0.05}
+           {'A' : 3.14,
+            'V' : 3.14,
+            'r' : 1,
+            'h' : 1}
 
-        tolerance : float
-            The tolerance to use for equation equality check.
+
+    errors : dict
+        A dictionary of variable keys with error tolerance values.
+        The keys must be identical to those used in the equations list.
+        Example:
+
+        .. code::
+
+           {'r' : 0.05,
+            'h' : 0.05}
+
+    tolerance : float
+        The tolerance to use for equation equality check.
     """
     def __init__(self, equations, values = {}, errors = {}, tolerance = 0.01):
         self.equations = equations
@@ -71,9 +76,10 @@ class ErrorSolver():
         """
         Appends a new equation to the equation list.
 
-        Parameters:
-            equation : str
-                The equation string.
+        Parameters
+        ----------
+        equation : str
+            The equation string.
         """
         try:
             e = self._parse_expr(equation)
@@ -87,9 +93,10 @@ class ErrorSolver():
         Parses the input equation string to a sympy expression and returns
         the result.
 
-        Parameters:
-            equation : str
-                The equation string to be parsed.
+        Parameters
+        ----------
+        equation : str
+            The equation string to be parsed.
         """
         s = self._set_equal_to_zero(equation)
         return parse_expr(s)
@@ -100,9 +107,10 @@ class ErrorSolver():
         the string so that equation is equal to zero to be compatible
         with sympy.
 
-        Parameters:
-            equation : str
-                The equation string to be rearranged.
+        Parameters
+        ----------
+        equation : str
+            The equation string to be rearranged.
         """
         f = str(equation)
         s = f.split('=')
@@ -144,11 +152,12 @@ class ErrorSolver():
         Returns a dictionary with lists of variables used in the equations and
         provided in the input values dictionary.
 
-        Returned dictionary keys:
-            known : list
-                A list of variables with known errors.
-            unknown : list
-                A list of variables with unknown errors.
+        Returns
+        -------
+        known : list
+            A list of variables with known errors.
+        unknown : list
+            A list of variables with unknown errors.
         """
         variables = self.equation_variables()
         v = variables.intersection(set(self.values))
@@ -257,13 +266,14 @@ class ErrorSolver():
         """
         Returns a dictionary that includes a matrix of calculated error weights.
 
-        Returned dictionary keys:
-            known : array
-                The error weight matrix for the known variables.
-            unknown : array
-                The error weight matrix for the unknown variables.
-            variables : list
-                A list of all variable names.
+        Returns
+        -------
+        known : array
+            The error weight matrix for the known variables.
+        unknown : array
+            The error weight matrix for the unknown variables.
+        variables : list
+            A list of all variable names.
         """
         check = self.check()
 
@@ -288,15 +298,16 @@ class ErrorSolver():
         """
         Solves the error matrix and returns a dictionary with the result.
 
-        Returned dictionary keys:
-            errors : dictionary
-                A dictionary of all variable names with error values.
-            percent_errors : dictionary
-                A dictionary of all variable names with percent errors.
-            values : dictionary
-                A dictionary of all variable names with values.
-            summary : str
-                A string summarizing the results.
+        Returns
+        -------
+        errors : dictionary
+            A dictionary of all variable names with error values.
+        percent_errors : dictionary
+            A dictionary of all variable names with percent errors.
+        values : dictionary
+            A dictionary of all variable names with values.
+        summary : str
+            A string summarizing the results.
         """
         d = self.error_matrices()
         ui = np.linalg.inv(d['unknown'])
@@ -329,9 +340,10 @@ class ErrorSolver():
         Generates a Python module with the equations and partial derivatives
         for the class and returns a string.
 
-        Parameters:
-            tab_spaces : int
-                Number of spaces to use for a tab indent.
+        Parameters
+        ----------
+        tab_spaces : int
+            Number of spaces to use for a tab indent.
         """
         eq, pf = [], []
         t = ' ' * tab_spaces + 'return {}\n\n'
@@ -385,9 +397,10 @@ class ErrorSolver():
         Generates a Python module with the equations and partial derivatives
         for the class and writes it to the designated path.
 
-        Parameters:
-            tab_spaces : int
-                Number of spaces to use for a tab indent.
+        Parameters
+        ----------
+        tab_spaces : int
+            Number of spaces to use for a tab indent.
         """
         s = self.module_str(names, tab_spaces)
         with open(path, 'wt') as file:
@@ -397,20 +410,21 @@ class ErrorSolver():
 
 class ErrorSolver2():
     """
-    Another class.
+    Class for solving for error tolerances using Python functions.
 
-    Parameters:
-        equations : list
-            A list of equation functions. Functions should return a float value.
-        partials : list
-            A list of dictionaries of partial derivative functions. Each
-            function should return a float value.
-        values : dict
-            A dictionary of values.
-        errors : dict
-            A dictionary of error tolerances.
-        tolerance : float
-            The tolerance used for verifying equation value validity.
+    Parameters
+    ----------
+    equations : list
+        A list of equation functions. Functions should return a float value.
+    partials : list
+        A list of dictionaries of partial derivative functions. Each
+        function should return a float value.
+    values : dict
+        A dictionary of values.
+    errors : dict
+        A dictionary of error tolerances.
+    tolerance : float
+        The tolerance used for verifying equation value validity.
     """
     def __init__(self, equations, partials, values, errors, tolerance = 0.01):
         self.equations = equations
@@ -423,15 +437,16 @@ class ErrorSolver2():
         """
         Initializes the class given a generated error solver module.
 
-        Parameters:
-            module : module
-                An imported module object.
-            values : dict
-                A dictionary of values.
-            errors : dict
-                A dictionary of error tolerances.
-            tolerance : float
-                The tolerance used for verifying equation value validity.
+        Parameters
+        ----------
+        module : module
+            An imported module object.
+        values : dict
+            A dictionary of values.
+        errors : dict
+            A dictionary of error tolerances.
+        tolerance : float
+            The tolerance used for verifying equation value validity.
         """
         equations = getattr(module, 'equations')
         partials = getattr(module, 'partials')
@@ -496,13 +511,14 @@ class ErrorSolver2():
         """
         Returns a dictionary that includes a matrix of calculated error weights.
 
-        Returned dictionary keys:
-            known : array
-                The error weight matrix for the known variables.
-            unknown : array
-                The error weight matrix for the unknown variables.
-            variables : list
-                A list of all variable names.
+        Returns
+        -------
+        known : array
+            The error weight matrix for the known variables.
+        unknown : array
+            The error weight matrix for the unknown variables.
+        variables : list
+            A list of all variable names.
         """
         check = self.check()
 

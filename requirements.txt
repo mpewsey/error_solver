@@ -1,5 +1,13 @@
-numpy
-sympy
-pytest
-pytest-cov
-codecov
+numpy>=1.14.5
+sympy>=1.1.1
+
+# test
+pytest>=3.5.1
+pytest-cov>=2.5.1
+codecov>=2.0.15
+
+# docs
+jinja2>=2.10
+recommonmark>=0.4.0
+docutils==0.14
+numpydoc>=0.8.0

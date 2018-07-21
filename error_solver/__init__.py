@@ -1,2 +1,10 @@
-from .solver import *
-from .data import *
+"""
+==================================
+Error Solver (:mod:`error_solver`)
+==================================
+
+.. automodule:: error_solver.solver
+    :members:
+"""
+
+from .solver import ErrorSolver, ErrorSolver2
