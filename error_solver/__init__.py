@@ -7,4 +7,4 @@ Error Solver (:mod:`error_solver`)
     :members:
 """
 
-from .solver import ErrorSolver, ErrorSolver2
+from .solver import ErrorSolver, ErrorSolverPy

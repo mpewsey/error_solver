@@ -8,6 +8,7 @@
 
 * [Error Solver](error_solver.rst)
 * [Data](data.rst)
+* [Example Usages](examples.ipynb)
 
 ## About
 
@@ -21,7 +22,3 @@ This package may be installed via pip:
 ```
 pip install git+https://github.com/line-mind/error_solver#egg=error_solver
 ```
-
-## Examples
-
-For example usages, see [examples.ipynb](examples.ipynb).

@@ -1,4 +1,4 @@
 [run]
-source = plsxml
+source = error_solver
 omit =
     setup.py

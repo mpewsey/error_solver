@@ -388,7 +388,7 @@ class ErrorSolver():
 
         pf = (',\n' + ' ' * 12).join(pf)
         s += 'def partials():\n'
-        s += '    return [{}]'.format(pf)
+        s += '    return [{}]\n'.format(pf)
 
         return s
 
@@ -408,7 +408,7 @@ class ErrorSolver():
             file.write(s)
 
 
-class ErrorSolver2():
+class ErrorSolverPy():
     """
     Class for solving for error tolerances using Python functions.
 
@@ -450,11 +450,11 @@ class ErrorSolver2():
         """
         equations = getattr(module, 'equations')
         partials = getattr(module, 'partials')
-        return ErrorSolver2(equations = equations(),
-                            partials = partials(),
-                            values = values,
-                            errors = errors,
-                            tolerance = tolerance)
+        return ErrorSolverPy(equations = equations(),
+                             partials = partials(),
+                             values = values,
+                             errors = errors,
+                             tolerance = tolerance)
 
     used_variables = ErrorSolver.used_variables
     unused_variables = ErrorSolver.unused_variables
