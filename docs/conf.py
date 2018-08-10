@@ -42,7 +42,9 @@ def write_index():
                       undefined = StrictUndefined)
     template = env.get_template('index.md')
     s = template.render(**metadata)
-
+    s = s.replace('<!--', '')
+    s = s.replace('-->', '')
+    
     with open(os.path.join(root, 'docs', 'index.md'), 'wt') as fh:
         fh.truncate()
         fh.write(s)

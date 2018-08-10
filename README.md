@@ -6,8 +6,9 @@
 
 ## Table of Contents
 
+<!--
 * [Error Solver](error_solver.rst)
-* [Data](data.rst)
+* [Data](data.rst)-->
 * [Example Usages](examples.ipynb)
 
 ## About
