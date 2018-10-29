@@ -1,5 +1,5 @@
 numpy>=1.14.5
-sympy>=1.1.1
+pandas>=0.23.0
 
 # test
 pytest>=3.5.1
@@ -11,3 +11,6 @@ jinja2>=2.10
 recommonmark>=0.4.0
 docutils==0.14
 numpydoc>=0.8.0
+
+# sympy
+sympy>=1.1.1
