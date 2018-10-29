@@ -8,7 +8,6 @@ Contains a class used as the base for ErrorSolver and ErrorSolverPy.
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 
 class _BaseErrorSolver():
