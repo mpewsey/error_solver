@@ -1,7 +1,7 @@
 """
-========================================================
-Base Error Solver (:mod:`civpy.math._base_error_solver`)
-========================================================
+==========================================================
+Base Error Solver (:mod:`error_solver._base_error_solver`)
+==========================================================
 
 Contains a class used as the base for ErrorSolver and ErrorSolverPy.
 """

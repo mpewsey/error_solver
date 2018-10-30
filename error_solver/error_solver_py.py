@@ -1,9 +1,10 @@
 """
-===================================================
-Error Solver Py (:mod:`civpy.math.error_solver_py`)
-===================================================
+=====================================================
+Error Solver Py (:mod:`error_solver.error_solver_py`)
+=====================================================
 
-Contains a class for solving for calculated error tolerances.
+Contains a class for calculating propagation error tolerances using
+Python method definitions.
 """
 
 import inspect
@@ -15,6 +16,12 @@ __all__ = ['ErrorSolverPy']
 
 class ErrorSolverPy(_BaseErrorSolver):
     """
+    A class for solving systems of equations for their propagation error
+    tolerances. This method requires all equation and partial derivatives
+    to be constructed using Python methods. The names of any included
+    variables and `**kwargs` must be included as parameter for method
+    definitions.
+
     Parameters
     ----------
     equations : list

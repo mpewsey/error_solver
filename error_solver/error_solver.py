@@ -1,10 +1,10 @@
 """
-=============================================
-Error Solver (:mod:`civpy.math.error_solver`)
-=============================================
+===============================================
+Error Solver (:mod:`error_solver.error_solver`)
+===============================================
 
-Contains a class for solving for the calculated error tolerances of a system
-of equations.
+Contains a class for calculating propagation error tolerances using
+`sympy` equations.
 """
 
 import sympy
@@ -17,6 +17,11 @@ __all__ = ['ErrorSolver']
 
 class ErrorSolver(_BaseErrorSolver):
     """
+    A class for solving systems of equations for their propagation error
+    tolerances. This method accepts equations defined as strings or `sympy`
+    expressions. The required partial derivatives are evaluated using the
+    equations.
+
     Parameters
     ----------
     equations : list
