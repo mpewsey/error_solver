@@ -88,7 +88,7 @@ class ErrorSolverPy(_BaseErrorSolver):
         """Returns a set of all variables contained in the equations."""
         eq_vars = set()
         for eq in self.equations:
-            eq_vars |= set(inspect.getargspec(eq)[0])
+            eq_vars |= set(inspect.getfullargspec(eq)[0])
         return eq_vars
 
     def get_partials(self):
