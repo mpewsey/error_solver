@@ -1,12 +1,3 @@
-"""
-=====================================================
-Error Solver Py (:mod:`error_solver.error_solver_py`)
-=====================================================
-
-Contains a class for calculating propagation error tolerances using
-Python method definitions.
-"""
-
 import inspect
 import numpy as np
 from ._base_error_solver import _BaseErrorSolver
@@ -17,10 +8,10 @@ __all__ = ['ErrorSolverPy']
 class ErrorSolverPy(_BaseErrorSolver):
     """
     A class for solving systems of equations for their propagation error
-    tolerances. This method requires all equation and partial derivatives
-    to be constructed using Python methods. The names of any included
-    variables and `**kwargs` must be included as parameter for method
-    definitions.
+    tolerances based on Python functions. This method requires all equation
+    and partial derivatives to be constructed using Python methods. The names
+    of any included variables and `**kwargs` must be included as parameter for
+    method definitions.
 
     Parameters
     ----------
@@ -33,14 +24,14 @@ class ErrorSolverPy(_BaseErrorSolver):
 
     Examples
     --------
-    .. literalinclude:: ../examples/error_solver_py_ex1.py
+    .. literalinclude:: ../../examples/error_solver_py_ex1.py
 
     In lieu of defining the equation methods manually, the :class:`.ErrorSolver`
     class may be used to automatically calculate the partial derivatives
     from an input system of equations and write methods to a Python module
     for use by :class:`ErrorSolverPy`. This can be done as follows:
 
-    .. literalinclude:: ../examples/error_solver_py_ex2.py
+    .. literalinclude:: ../../examples/error_solver_py_ex2.py
     """
     def __init__(self, equations, partials, tol=0.01):
         self.equations = equations
@@ -49,6 +40,9 @@ class ErrorSolverPy(_BaseErrorSolver):
 
     def init_from_module(module, tol=0.01):
         """
+        Initializes an `ErrorSolverPy` object based on a module written
+        using :meth:`.ErrorSolver.write_module`.
+
         Parameters
         ----------
         module : module
