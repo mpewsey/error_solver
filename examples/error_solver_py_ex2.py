@@ -1,5 +1,5 @@
 # error_solver_py_ex2.py
-from error_solver.error_solver import ErrorSolver
+from error_solver import ErrorSolver
 
 # Define the equations
 equations = ['A = pi * r**2',

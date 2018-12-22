@@ -1,12 +1,3 @@
-"""
-===============================================
-Error Solver (:mod:`error_solver.error_solver`)
-===============================================
-
-Contains a class for calculating propagation error tolerances using
-`sympy` equations.
-"""
-
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import numpy as np
@@ -18,9 +9,9 @@ __all__ = ['ErrorSolver']
 class ErrorSolver(_BaseErrorSolver):
     """
     A class for solving systems of equations for their propagation error
-    tolerances. This method accepts equations defined as strings or `sympy`
-    expressions. The required partial derivatives are evaluated using the
-    equations.
+    tolerances based on equation strings. This method accepts equations
+    defined as strings or `sympy` expressions. The required partial
+    derivatives are evaluated using the equations.
 
     Parameters
     ----------
@@ -31,7 +22,7 @@ class ErrorSolver(_BaseErrorSolver):
 
     Examples
     --------
-    .. literalinclude:: ../examples/error_solver_ex1.py
+    .. literalinclude:: ../../examples/error_solver_ex1.py
     """
     def __init__(self, equations, tol=0.01):
         self.equations = []
@@ -199,6 +190,9 @@ class ErrorSolver(_BaseErrorSolver):
 
     def module_str(self, names={}, tab_spaces=4):
         """
+        Returns a string for a Python module containing the equations
+        and derivatives assigned to the object.
+
         Parameters
         ----------
         deg : int
@@ -287,6 +281,9 @@ class ErrorSolver(_BaseErrorSolver):
 
     def write_module(self, path, names={}, tab_spaces=4):
         """
+        Writes a Python module containing the equations and derivatives
+        assigned to the object to file.
+
         Parameters
         ----------
         path : str

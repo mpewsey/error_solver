@@ -2,15 +2,9 @@
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/error_solver.svg)
 ![PyPI](https://img.shields.io/pypi/v/error_solver.svg)
-[![Build Status](https://travis-ci.com/line-mind/error_solver.svg?branch=master)](https://travis-ci.com/line-mind/error_solver)
+[![Build Status](https://travis-ci.com/mpewsey/error_solver.svg?branch=master)](https://travis-ci.com/mpewsey/error_solver)
 [![Documentation Status](https://readthedocs.org/projects/error-solver/badge/?version=latest)](https://error-solver.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/line-mind/error_solver/branch/master/graph/badge.svg)](https://codecov.io/gh/line-mind/error_solver)
-
-<!--
-## Table of Contents
-
-* [Error Solver](error_solver.rst)
--->
+[![codecov](https://codecov.io/gh/mpewsey/error_solver/branch/master/graph/badge.svg)](https://codecov.io/gh/mpewsey/error_solver)
 
 ## About
 
@@ -32,15 +26,3 @@ The above installation only install the dependencies required for the
 ```
 pip install error_solver[all]
 ```
-
-<!--
-## Example: Error in Cylinder
-
-The below example determines the propagation error tolerances for the cross
-sectional area `A` and volume `V` of a cylinder given the
-measurement tolerance for the radius `r` and height `h`.
-
-```eval_rst
-.. literalinclude:: ../examples/error_solver_ex1.py
-```
--->

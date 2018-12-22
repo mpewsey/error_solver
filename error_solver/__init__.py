@@ -1,15 +1,20 @@
 """
-==================================
-Error Solver (:mod:`error_solver`)
-==================================
+===================================
+Error Solver (:mod:`.error_solver`)
+===================================
 
-.. automodule:: error_solver.error_solver
-    :members:
-    :inherited-members:
+The below classes are available for error propagation approximation.
 
-.. automodule:: error_solver.error_solver_py
-    :members:
-    :inherited-members:
+.. autosummary::
+    :toctree: generated/
+
+    ErrorSolver
+    ErrorSolverPy
 """
+
+try:
+    from .error_solver import *
+except:
+    pass
 
 from .error_solver_py import *

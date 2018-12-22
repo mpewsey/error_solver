@@ -9,6 +9,7 @@ __pycache__/
 .pytest_cache
 
 /docs/index.md
+docs/generated
 
 # Distribution / packaging
 .Python
