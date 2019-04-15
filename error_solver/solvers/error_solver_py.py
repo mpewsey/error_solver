@@ -22,12 +22,14 @@ class ErrorSolverPy(_BaseErrorSolver):
 
     Examples
     --------
+    .. literalinclude:: ../../examples/error_solver_py_ex1.py
 
-    In lieu of defining the equation functions manually, the :class:`.ErrorSolver`
+    In lieu of defining the equation methods manually, the :class:`.ErrorSolver`
     class may be used to automatically calculate the partial derivatives
-    from an input system of equations and write functions to a Python module
+    from an input system of equations and write methods to a Python module
     for use by :class:`ErrorSolverPy`. This can be done as follows:
 
+    .. literalinclude:: ../../examples/error_solver_py_ex2.py
     """
     def __init__(self, equations, partials, combos={}, tol=0.01):
         self._equations = equations

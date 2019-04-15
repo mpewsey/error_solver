@@ -7,7 +7,9 @@ __all__ = [
 
 
 def get_data_folder():
-    """Returns the absolute path to the data directory."""
+    """
+    Returns the absolute path to the data directory.
+    """
     return os.path.dirname(os.path.abspath(__file__))
 
 

@@ -22,6 +22,10 @@ class ErrorSolver(_BaseErrorSolver):
         A dictionary of equation combinations.
     tol : float
         The tolerance used for verifying that values satisfy equations.
+
+    Examples
+    --------
+    .. literalinclude:: ../../examples/error_solver_ex1.py
     """
     def __init__(self, equations, names={}, combos={}, tol=0.01):
         self.names = names

@@ -10,4 +10,4 @@ Data (:mod:`error_solver.data`)
     get_file_path
 """
 
-from .data import *
+from .paths import *

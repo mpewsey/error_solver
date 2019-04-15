@@ -1,6 +1,6 @@
 import os
 from data import get_file_path, get_data_folder
-from error_solver import ErrorSolver
+from solvers import ErrorSolver
 
 
 if __name__ == '__main__':
