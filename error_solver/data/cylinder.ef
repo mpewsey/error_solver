@@ -1,0 +1,10 @@
+[equations]
+A = pi * r**2   # 0
+V = A * h       # 1
+
+
+[names]
+A: area
+r: radius
+V: volume
+h: height

@@ -1,2 +1,2 @@
-.. automodule:: error_solver
+.. automodule:: error_solver.error_solver
    :members:

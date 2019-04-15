@@ -1,6 +1,6 @@
-=========================
-Error Solver Documenation
-=========================
+==========================
+Error Solver Documentation
+==========================
 
 .. image:: https://img.shields.io/pypi/pyversions/error_solver.svg
     :target: #
@@ -47,8 +47,6 @@ The below example determines the propagation error tolerances for the cross
 sectional area `A` and volume `V` of a cylinder given the
 measurement tolerance for the radius `r` and height `h`.
 
-.. literalinclude:: ../examples/error_solver_ex1.py
-
 
 API Documentation
 =================
@@ -56,3 +54,4 @@ API Documentation
     :maxdepth: 1
 
     error_solver
+    data

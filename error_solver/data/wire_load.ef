@@ -1,0 +1,26 @@
+[equations]
+pw = q * vw**2                                # 0
+wh = pw * (dw + 2*ri) * sin(az - waz)**2      # 1
+wv = rhoi * pi * ri * (ri + dw) + w           # 2
+(wr - k)**2 = wh**2 + wv**2                   # 3
+
+
+[names]
+az: azimuth
+dw: diameter
+k: k_factor
+pw: wind_pressure
+q: wind_pressure_coeff
+ri: ice_thickness
+rhoi: ice_density
+vw: wind_velocity
+w: unit_weight
+waz: wind_azimuth
+wh: horz_unit_load
+wv: vert_unit_load
+wr: unit_load
+
+
+[combos]
+wind_velocity: 0 1 2 3
+wind_pressure: 1 2 3
