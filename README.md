@@ -34,7 +34,6 @@ area `A` and volume `V` of a cylinder given the measurement tolerance for the ra
 `r` and height `h`.
 
 ```python
-# error_solver_ex1.py
 from error_solver import ErrorSolver
 
 # Define the equations

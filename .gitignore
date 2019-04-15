@@ -10,6 +10,7 @@ __pycache__/
 .DS_Store
 
 _cylinder_test_mod.py
+_wire_load_test_mod.py
 
 /docs/index.md
 docs/generated
