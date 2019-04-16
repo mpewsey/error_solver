@@ -1,0 +1,11 @@
+[equations]
+A = pi * r**2
+
+
+[names]
+A: area
+r: radius
+
+
+[combos]
+all: 0

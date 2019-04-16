@@ -24,7 +24,4 @@ def get_file_path(name):
     name : str
         The file name.
     """
-    if not name.endswith('.ef'):
-        name = '{}.ef'.format(name)
-
     return os.path.join(get_data_folder(), name)

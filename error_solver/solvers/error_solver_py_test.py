@@ -1,14 +1,19 @@
 import os
 import time
 import pytest
-from ..data import get_file_path, get_data_folder, _cylinder
+from ..data import get_file_path, _cylinder
 from .error_solver_py import *
 from .error_solver import *
 
 
+def test_repr():
+    solver = ErrorSolverPy.from_module(_cylinder)
+    repr(solver)
+
+
 def test_write_and_solve():
-    solver = ErrorSolver.from_file(get_file_path('cylinder'))
-    path = os.path.join(get_data_folder(), '_cylinder_test_mod.py')
+    solver = ErrorSolver.from_file(get_file_path('cylinder.ef'))
+    path = get_file_path('_cylinder_test_mod.py')
 
     # Remove test module if it already exists
     if os.path.exists(path): # pragma: no cover

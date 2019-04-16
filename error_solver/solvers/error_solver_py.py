@@ -37,6 +37,15 @@ class ErrorSolverPy(_BaseErrorSolver):
         self.combos = combos
         self.tol = tol
 
+    def __repr__(self):
+        s = (
+            ('equations', self._equations),
+            ('combos', self.combos),
+            ('tol', self.tol),
+        )
+        s = ', '.join('{}: {!r}'.format(x, y) for x, y in s)
+        return '{}({})'.format(type(self).__name__, s)
+
     @classmethod
     def from_module(cls, module, **kwargs):
         """

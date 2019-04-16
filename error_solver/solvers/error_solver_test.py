@@ -1,12 +1,18 @@
 import os
 import time
 import pytest
-from ..data import get_file_path, get_data_folder
+from ..data import get_file_path
 from .error_solver import *
 
 
+def test_repr():
+    path = get_file_path('wire_load.ef')
+    solver = ErrorSolver.from_file(path)
+    repr(solver)
+
+
 def test_from_file():
-    path = get_file_path('wire_load')
+    path = get_file_path('wire_load.ef')
     solver = ErrorSolver.from_file(path)
 
     assert len(solver.get_equations()) == 4
@@ -14,7 +20,7 @@ def test_from_file():
 
 
 def test_get_equations():
-    path = get_file_path('wire_load')
+    path = get_file_path('wire_load.ef')
     solver = ErrorSolver.from_file(path)
 
     assert len(solver.get_equations('wind_pressure')) == 3
@@ -22,7 +28,7 @@ def test_get_equations():
 
 
 def test_get_partials():
-    path = get_file_path('wire_load')
+    path = get_file_path('wire_load.ef')
     solver = ErrorSolver.from_file(path)
 
     assert len(solver.get_partials('wind_pressure')) == 3
@@ -30,7 +36,7 @@ def test_get_partials():
 
 
 def test_check_determinancy1():
-    path = get_file_path('cylinder')
+    path = get_file_path('cylinder.ef')
     solver = ErrorSolver.from_file(path)
 
     values = {
@@ -49,7 +55,7 @@ def test_check_determinancy1():
 
 
 def test_check_determinancy2():
-    path = get_file_path('cylinder')
+    path = get_file_path('cylinder.ef')
     solver = ErrorSolver.from_file(path)
 
     values = {
@@ -70,7 +76,7 @@ def test_check_determinancy2():
 
 
 def test_solve1():
-    path = get_file_path('cylinder')
+    path = get_file_path('cylinder.ef')
     solver = ErrorSolver.from_file(path)
 
     values = {
@@ -93,7 +99,7 @@ def test_solve1():
 
 
 def test_solve2():
-    path = get_file_path('cylinder')
+    path = get_file_path('cylinder.ef')
     solver = ErrorSolver.from_file(path)
 
     values = {
@@ -120,9 +126,9 @@ def test_solve2():
 
 
 def test_write_python():
-    path = get_file_path('wire_load')
+    path = get_file_path('wire_load.ef')
     solver = ErrorSolver.from_file(path)
-    path = os.path.join(get_data_folder(), '_wire_load_test_mod.py')
+    path = get_file_path('_wire_load_test_mod.py')
 
     solver.write_python(path)
     time.sleep(3)
@@ -132,7 +138,7 @@ def test_write_python():
 
 
 def test_bad_values():
-    path = get_file_path('cylinder')
+    path = get_file_path('cylinder.ef')
     solver = ErrorSolver.from_file(path)
 
     values = {
@@ -152,7 +158,7 @@ def test_bad_values():
 
 
 def test_missing_values():
-    path = get_file_path('cylinder')
+    path = get_file_path('cylinder.ef')
     solver = ErrorSolver.from_file(path)
 
     values = {

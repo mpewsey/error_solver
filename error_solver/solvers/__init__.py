@@ -3,11 +3,14 @@
 Error Solver (:mod:`error_solver.solvers`)
 ==========================================
 
+The following classes are available for performing propagation error analysis.
+
 .. autosummary::
     :toctree: generated/
 
     ErrorSolver
     ErrorSolverPy
+    SolverPipeline
 """
 
 import warnings
@@ -23,6 +26,8 @@ except ModuleNotFoundError as error:
         raise error
 except Exception as error:
     raise error
+
+from .pipeline import *
 
 # Clean up namespace
 del warnings

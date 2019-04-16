@@ -16,4 +16,4 @@ solver.write_python('cylinder_error.py')
 from . import cylinder_error
 from error_solver import ErrorSolverPy
 
-solver_py = ErrorSolverPy.from_module(cylinder_error)
+solver = ErrorSolverPy.from_module(cylinder_error)

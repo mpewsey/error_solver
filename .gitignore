@@ -8,6 +8,7 @@ __pycache__/
 
 .pytest_cache
 .DS_Store
+*.ipynb
 
 _cylinder_test_mod.py
 _wire_load_test_mod.py

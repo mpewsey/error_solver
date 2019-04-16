@@ -33,6 +33,15 @@ class ErrorSolver(_BaseErrorSolver):
         self.tol = tol
         self.set_equations(equations)
 
+    def __repr__(self):
+        s = (
+            ('equations', self._equations),
+            ('combos', self.combos),
+            ('tol', self.tol),
+        )
+        s = ', '.join('{}: {!r}'.format(x, y) for x, y in s)
+        return '{}({})'.format(type(self).__name__, s)
+
     @classmethod
     def from_file(cls, path, **kwargs):
         """
