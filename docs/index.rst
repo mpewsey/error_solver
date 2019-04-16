@@ -1,6 +1,6 @@
-=========================
-Error Solver Documenation
-=========================
+==========================
+Error Solver Documentation
+==========================
 
 .. image:: https://img.shields.io/pypi/pyversions/error_solver.svg
     :target: #
@@ -55,4 +55,5 @@ API Documentation
 .. toctree::
     :maxdepth: 1
 
-    error_solver
+    solvers
+    data

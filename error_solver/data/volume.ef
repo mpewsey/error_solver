@@ -1,0 +1,12 @@
+[equations]
+V = A * h
+
+
+[names]
+A: area
+V: volume
+h: height
+
+
+[combos]
+all: 0

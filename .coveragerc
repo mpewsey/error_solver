@@ -2,3 +2,5 @@
 source = error_solver
 omit =
     setup.py
+    error_solver/_make_modules.py
+    error_solver/data/_wire_load.py
