@@ -1,3 +1,7 @@
+"""
+Copyright (c) 2019, Matt Pewsey
+"""
+
 from functools import wraps
 from weakref import WeakKeyDictionary
 
