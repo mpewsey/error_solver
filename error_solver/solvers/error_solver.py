@@ -1,3 +1,7 @@
+"""
+Copyright (c) 2019, Matt Pewsey
+"""
+
 import sympy
 from sympy.parsing.sympy_parser import parse_expr
 import datetime

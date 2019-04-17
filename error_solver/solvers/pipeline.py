@@ -1,3 +1,7 @@
+"""
+Copyright (c) 2019, Matt Pewsey
+"""
+
 import pandas as pd
 
 __all__ = ['SolverPipeline']
