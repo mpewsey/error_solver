@@ -117,9 +117,10 @@ class _BaseErrorSolver(object):
         n, m = len(val), len(err)
 
         xk = np.array([errors[k] for k in err], dtype='float').reshape(-1, 1)
-        jac = np.abs(self.jacobian(values, errors, combo))
+        jac = self.jacobian(values, errors, combo)
         ju, jk = jac[:,:n], jac[:,n:n+m]
         jui = np.abs(np.linalg.inv(ju))
+        ju, jk = np.abs(ju), np.abs(jk)
 
         if const:
             ck = np.array([const.get(k, 0) for k in err], dtype='float').reshape(-1, 1)
